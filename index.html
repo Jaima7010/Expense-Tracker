@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Expense Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <div class="logo">
+            EXPENSE<span>TRACKER</span>
+        </div>
+
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#add-expense">Add Expense</a>
+            <a href="#history">History</a>
+            <a href="#category-analysis">Analysis</a>
+            <a href="#summary">Summary</a>
+            <a href="#report">Report</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section id="dashboard" class="hero">
+
+            <div class="hero-text">
+
+                <p class="small-title">
+                    SDG 1 • NO POVERTY
+                </p>
+
+                <h1>
+                    Track your money.
+                    <br>
+                    Control your <span>future.</span>
+                </h1>
+
+                <p>
+                    A simple and smart way to manage your
+                    daily expenses and understand your spending.
+                </p>
+
+                <button onclick="showAddExpense()">
+                    + Add Expense
+                </button>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <p>Total Expense</p>
+
+                <h2 id="totalAmount">
+                    ₹0
+                </h2>
+
+                <div class="card-row">
+
+                    <div>
+                        <span>Expenses</span>
+
+                        <strong id="expenseCount">
+                            0
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>This Month</span>
+
+                        <strong id="monthlyAmount">
+                            ₹0
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ADD EXPENSE ================= -->
+
+        <section id="add-expense" class="content-section">
+
+            <div class="section-title">
+
+                <p>
+                    MANAGE YOUR MONEY
+                </p>
+
+                <h2>
+                    Add New Expense
+                </h2>
+
+            </div>
+
+
+            <form id="expenseForm">
+
+                <div class="input-group">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="description"
+                        placeholder="Example: Lunch"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>
+                        Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        placeholder="₹ Enter amount"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        required
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option>
+                            Food
+                        </option>
+
+                        <option>
+                            Travel
+                        </option>
+
+                        <option>
+                            Education
+                        </option>
+
+                        <option>
+                            Shopping
+                        </option>
+
+                        <option>
+                            Bills
+                        </option>
+
+                        <option>
+                            Health
+                        </option>
+
+                        <option>
+                            Entertainment
+                        </option>
+
+                        <option>
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        required
+                    >
+
+                </div>
+
+
+                <button type="submit">
+                    Save Expense
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- ================= EXPENSE HISTORY ================= -->
+
+        <section
+            id="history"
+            class="content-section"
+        >
+
+            <div class="section-title">
+
+                <p>
+                    YOUR SPENDING
+                </p>
+
+                <h2>
+                    Recent Expenses
+                </h2>
+
+            </div>
+
+
+            <div
+                id="expenseList"
+                class="expense-list"
+            >
+
+                <div class="empty-message">
+                    No expenses added yet.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CATEGORY ANALYSIS ================= -->
+
+        <section
+            id="category-analysis"
+            class="content-section"
+        >
+
+            <div class="section-title">
+
+                <p>
+                    SPENDING ANALYSIS
+                </p>
+
+                <h2>
+                    Category-wise Spending
+                </h2>
+
+            </div>
+
+
+            <div class="category-chart-card">
+
+                <div class="category-summary">
+
+                    <h3>
+                        Where does your money go?
+                    </h3>
+
+                    <p>
+                        See how much you spend in each
+                        category.
+                    </p>
+
+                </div>
+
+
+                <!-- Chart -->
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="categoryChart"
+                    >
+                    </canvas>
+
+                </div>
+
+
+                <!-- Category Details -->
+
+                <div
+                    id="categoryDetails"
+                    class="category-details"
+                >
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= MONTHLY SUMMARY ================= -->
+
+        <section
+            id="summary"
+            class="content-section summary-section"
+        >
+
+            <div class="section-title">
+
+                <p>
+                    UNDERSTAND YOUR SPENDING
+                </p>
+
+                <h2>
+                    Monthly Summary
+                </h2>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div>
+
+                    <span>
+                        Current Month
+                    </span>
+
+                    <h3 id="currentMonth">
+                        --
+                    </h3>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Monthly Spending
+                    </span>
+
+                    <h3 id="summaryAmount">
+                        ₹0
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= REPORT GENERATION ================= -->
+
+        <section
+            id="report"
+            class="content-section"
+        >
+
+            <div class="section-title">
+
+                <p>
+                    EXPENSE REPORT
+                </p>
+
+                <h2>
+                    Monthly Report
+                </h2>
+
+            </div>
+
+
+            <div class="report-card">
+
+
+                <!-- Total Expenses -->
+
+                <div class="report-item">
+
+                    <span>
+                        Total Expenses
+                    </span>
+
+                    <strong id="reportTotalExpenses">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <!-- Total Amount -->
+
+                <div class="report-item">
+
+                    <span>
+                        Total Amount
+                    </span>
+
+                    <strong id="reportTotalAmount">
+                        ₹0
+                    </strong>
+
+                </div>
+
+
+                <!-- Current Month -->
+
+                <div class="report-item">
+
+                    <span>
+                        Current Month
+                    </span>
+
+                    <strong id="reportCurrentMonth">
+                        --
+                    </strong>
+
+                </div>
+
+
+                <!-- Monthly Spending -->
+
+                <div class="report-item">
+
+                    <span>
+                        Monthly Spending
+                    </span>
+
+                    <strong id="reportMonthlyAmount">
+                        ₹0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= CATEGORY REPORT ================= -->
+
+            <div class="section-title report-category-title">
+
+                <p>
+                    BREAKDOWN
+                </p>
+
+                <h2>
+                    Category-wise Report
+                </h2>
+
+            </div>
+
+
+            <div
+                id="reportCategoryList"
+                class="report-category-list"
+            >
+
+                <p>
+                    No report data available.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <p>
+            Expense Tracker • SDG 1 - No Poverty
+        </p>
+
+    </footer>
+
+
+    <!-- ================= CHART LIBRARY ================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+
+
+    <!-- ================= MAIN SCRIPT ================= -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

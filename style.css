@@ -1,0 +1,685 @@
+
+/* ===============================
+   RESET
+================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f8f5;
+    color: #222;
+    line-height: 1.6;
+}
+
+
+/* ===============================
+   HEADER
+================================ */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 20px 8%;
+
+    background: white;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    font-weight: normal;
+}
+
+nav {
+    display: flex;
+    gap: 28px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: #777;
+}
+
+
+/* ===============================
+   HERO / DASHBOARD
+================================ */
+
+.hero {
+    min-height: 520px;
+
+    padding: 80px 8%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 60px;
+
+    background: #eef1ea;
+}
+
+.hero-text {
+    max-width: 620px;
+}
+
+.small-title {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    line-height: 1.1;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    text-decoration: underline;
+}
+
+.hero-text > p:not(.small-title) {
+    max-width: 520px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+button {
+    border: none;
+    padding: 13px 24px;
+
+    background: #222;
+    color: white;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+
+/* ===============================
+   DASHBOARD CARD
+================================ */
+
+.dashboard-card {
+    width: 360px;
+
+    padding: 35px;
+
+    background: white;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card > p {
+    color: #777;
+    font-size: 14px;
+}
+
+.dashboard-card h2 {
+    font-size: 40px;
+    margin: 8px 0 30px;
+}
+
+.card-row {
+    display: flex;
+    justify-content: space-between;
+
+    border-top: 1px solid #eee;
+
+    padding-top: 20px;
+}
+
+.card-row div {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-row span {
+    font-size: 13px;
+    color: #888;
+}
+
+.card-row strong {
+    font-size: 18px;
+    margin-top: 4px;
+}
+
+
+/* ===============================
+   CONTENT SECTIONS
+================================ */
+
+.content-section {
+    padding: 80px 8%;
+}
+
+.section-title {
+    margin-bottom: 35px;
+}
+
+.section-title p {
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    color: #777;
+}
+
+.section-title h2 {
+    font-size: 32px;
+    margin-top: 5px;
+}
+
+
+/* ===============================
+   EXPENSE FORM
+================================ */
+
+#expenseForm {
+    max-width: 700px;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 25px;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #555;
+}
+
+#expenseForm button {
+    grid-column: 1 / -1;
+
+    width: fit-content;
+}
+
+
+/* ===============================
+   EXPENSE HISTORY
+================================ */
+
+.expense-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+
+    max-width: 900px;
+}
+
+.expense-item {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 20px 25px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.expense-info h3 {
+    font-size: 17px;
+    margin-bottom: 3px;
+}
+
+.expense-info p {
+    color: #888;
+    font-size: 13px;
+}
+
+.expense-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.expense-amount {
+    font-size: 17px;
+    font-weight: bold;
+
+    margin-right: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 8px 14px;
+
+    font-size: 12px;
+
+    border-radius: 5px;
+}
+
+.edit-btn {
+    background: #555;
+}
+
+.delete-btn {
+    background: #222;
+}
+
+.empty-message {
+    padding: 30px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    color: #888;
+
+    text-align: center;
+}
+
+
+/* ===============================
+   CATEGORY CHART
+================================ */
+
+.category-chart-card {
+    max-width: 900px;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.category-summary {
+    margin-bottom: 25px;
+}
+
+.category-summary h3 {
+    font-size: 21px;
+    margin-bottom: 5px;
+}
+
+.category-summary p {
+    color: #888;
+    font-size: 14px;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 500px;
+
+    height: 380px;
+
+    margin: 0 auto 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#categoryChart {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+/* ===============================
+   CATEGORY DETAILS
+================================ */
+
+.category-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+.category-detail {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 14px 18px;
+
+    background: #f7f8f5;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+}
+
+.category-detail span {
+    color: #555;
+}
+
+.category-detail strong {
+    font-size: 15px;
+}
+
+
+/* ===============================
+   MONTHLY SUMMARY
+================================ */
+
+.summary-section {
+    background: #eef1ea;
+}
+
+.summary-card {
+    max-width: 700px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.summary-card div {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card span {
+    color: #888;
+    font-size: 13px;
+}
+
+.summary-card h3 {
+    font-size: 24px;
+    margin-top: 5px;
+}
+
+
+/* ===============================
+   MONTHLY REPORT
+================================ */
+
+#report {
+    background: #f7f8f5;
+}
+
+.report-card {
+    max-width: 900px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+.report-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background: white;
+
+    padding: 24px 25px;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.report-item span {
+    color: #777;
+
+    font-size: 14px;
+}
+
+.report-item strong {
+    font-size: 20px;
+}
+
+
+/* ===============================
+   REPORT CATEGORY
+================================ */
+
+.report-category-title {
+    margin-top: 55px;
+}
+
+.report-category-list {
+    max-width: 900px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.report-category-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background: white;
+
+    padding: 16px 20px;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.report-category-item span {
+    color: #555;
+
+    font-size: 14px;
+}
+
+.report-category-item strong {
+    font-size: 15px;
+}
+
+
+/* ===============================
+   FOOTER
+================================ */
+
+footer {
+    text-align: center;
+
+    padding: 30px;
+
+    background: #222;
+
+    color: white;
+
+    font-size: 13px;
+}
+
+
+/* ===============================
+   RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 800px) {
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 60px 6%;
+    }
+
+    .hero h1 {
+        font-size: 40px;
+    }
+
+    .dashboard-card {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .content-section {
+        padding: 60px 6%;
+    }
+
+    #expenseForm {
+        grid-template-columns: 1fr;
+    }
+
+    #expenseForm button {
+        grid-column: auto;
+    }
+
+    .expense-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .expense-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .category-details {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+        flex-direction: column;
+    }
+
+    .report-card {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .dashboard-card h2 {
+        font-size: 32px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+
+    .expense-actions {
+        flex-wrap: wrap;
+    }
+}
