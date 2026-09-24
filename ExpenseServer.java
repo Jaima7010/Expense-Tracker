@@ -1,4 +1,3 @@
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -8,24 +7,39 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ExpenseServer {
 
-    private static ExpenseManager manager = new ExpenseManager();
+    private static final ExpenseManager manager = new ExpenseManager();
 
     public static void main(String[] args) throws IOException {
 
+        // Load saved expenses
         ArrayList<Expense> savedExpenses = FileManager.loadExpenses();
 
         for (Expense expense : savedExpenses) {
             manager.addExpense(expense);
         }
 
+        /*
+         * Local laptop:
+         * PORT is not available -> uses 8080
+         *
+         * Render:
+         * PORT is provided automatically -> uses Render PORT
+         */
+        int port = Integer.parseInt(
+                System.getenv().getOrDefault("PORT", "8080")
+        );
+
+        // Start server
         HttpServer server = HttpServer.create(
-                new InetSocketAddress(8080),
+                new InetSocketAddress("0.0.0.0", port),
                 0
         );
 
+        // API routes
         server.createContext("/expenses", ExpenseServer::handleExpenses);
         server.createContext("/report", ExpenseServer::handleReport);
         server.createContext("/", ExpenseServer::handleHome);
@@ -36,15 +50,15 @@ public class ExpenseServer {
         System.out.println("       EXPENSE TRACKER SERVER");
         System.out.println("=================================");
         System.out.println("Server started successfully!");
-        System.out.println("Open: http://localhost:8080");
+        System.out.println("Port: " + port);
 
         server.start();
     }
 
 
-    // ===============================
+    // =========================================================
     // HOME
-    // ===============================
+    // =========================================================
 
     private static void handleHome(HttpExchange exchange)
             throws IOException {
@@ -58,9 +72,9 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // EXPENSE API
-    // ===============================
+    // =========================================================
 
     private static void handleExpenses(HttpExchange exchange)
             throws IOException {
@@ -68,7 +82,10 @@ public class ExpenseServer {
         String method = exchange.getRequestMethod();
 
 
+        // -----------------------------------------------------
         // OPTIONS
+        // -----------------------------------------------------
+
         if (method.equalsIgnoreCase("OPTIONS")) {
 
             addCorsHeaders(exchange);
@@ -80,7 +97,10 @@ public class ExpenseServer {
         }
 
 
-        // GET
+        // -----------------------------------------------------
+        // GET - VIEW EXPENSES
+        // -----------------------------------------------------
+
         if (method.equalsIgnoreCase("GET")) {
 
             String json = createJson();
@@ -96,7 +116,10 @@ public class ExpenseServer {
         }
 
 
-        // POST
+        // -----------------------------------------------------
+        // POST - ADD EXPENSE
+        // -----------------------------------------------------
+
         if (method.equalsIgnoreCase("POST")) {
 
             String data = readRequestBody(exchange);
@@ -126,7 +149,10 @@ public class ExpenseServer {
         }
 
 
-        // DELETE
+        // -----------------------------------------------------
+        // DELETE - DELETE EXPENSE
+        // -----------------------------------------------------
+
         if (method.equalsIgnoreCase("DELETE")) {
 
             int id = getIdFromQuery(
@@ -158,7 +184,10 @@ public class ExpenseServer {
         }
 
 
-        // PUT - EDIT
+        // -----------------------------------------------------
+        // PUT - EDIT EXPENSE
+        // -----------------------------------------------------
+
         if (method.equalsIgnoreCase("PUT")) {
 
             int id = getIdFromQuery(
@@ -192,7 +221,10 @@ public class ExpenseServer {
         }
 
 
+        // -----------------------------------------------------
         // INVALID METHOD
+        // -----------------------------------------------------
+
         sendResponse(
                 exchange,
                 405,
@@ -202,10 +234,9 @@ public class ExpenseServer {
     }
 
 
-
-    // ===============================
+    // =========================================================
     // MONTHLY REPORT
-    // ===============================
+    // =========================================================
 
     private static void handleReport(HttpExchange exchange)
             throws IOException {
@@ -222,6 +253,7 @@ public class ExpenseServer {
             return;
         }
 
+
         double total = 0;
         double monthlyTotal = 0;
 
@@ -230,29 +262,39 @@ public class ExpenseServer {
         int currentYear = today.getYear();
         int currentMonth = today.getMonthValue();
 
-        java.util.HashMap<String, Double> categoryTotals =
-                new java.util.HashMap<>();
+        HashMap<String, Double> categoryTotals =
+                new HashMap<>();
 
+
+        // Calculate totals
         for (Expense expense : manager.getExpenses()) {
 
             double amount = expense.getAmount();
 
             total += amount;
 
+
+            // Current month amount
             if (expense.getDate().getYear() == currentYear
                     && expense.getDate().getMonthValue() == currentMonth) {
 
                 monthlyTotal += amount;
             }
 
-            String category = expense.getCategory().getName();
+
+            // Category-wise total
+            String category =
+                    expense.getCategory().getName();
 
             categoryTotals.put(
                     category,
-                    categoryTotals.getOrDefault(category, 0.0) + amount
+                    categoryTotals.getOrDefault(category, 0.0)
+                            + amount
             );
         }
 
+
+        // Create category JSON
         StringBuilder categoryJson =
                 new StringBuilder("{");
 
@@ -275,22 +317,39 @@ public class ExpenseServer {
 
         categoryJson.append("}");
 
+
+        // Create report JSON
         String report =
                 "{"
-                + "\"totalExpenses\":" + manager.getExpenses().size() + ","
-                + "\"totalAmount\":" + total + ","
-                + "\"currentMonth\":\""
-                + today.getMonth()
+                        + "\"totalExpenses\":"
+                        + manager.getExpenses().size()
+                        + ","
+
+                        + "\"totalAmount\":"
+                        + total
+                        + ","
+
+                        + "\"currentMonth\":\""
+                        + today.getMonth()
                         .toString()
                         .substring(0, 1)
                         .toUpperCase()
-                + today.getMonth()
+                        + today.getMonth()
                         .toString()
                         .substring(1)
-                + " " + currentYear + "\","
-                + "\"monthlyAmount\":" + monthlyTotal + ","
-                + "\"categoryWise\":" + categoryJson
-                + "}";
+                        + " "
+                        + currentYear
+                        + "\","
+
+                        + "\"monthlyAmount\":"
+                        + monthlyTotal
+                        + ","
+
+                        + "\"categoryWise\":"
+                        + categoryJson
+
+                        + "}";
+
 
         sendResponse(
                 exchange,
@@ -301,11 +360,12 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // READ REQUEST BODY
-    // ===============================
+    // =========================================================
 
-    private static String readRequestBody(HttpExchange exchange)
+    private static String readRequestBody(
+            HttpExchange exchange)
             throws IOException {
 
         return new String(
@@ -315,35 +375,29 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // ADD EXPENSE
-    // ===============================
+    // =========================================================
 
-    private static boolean addExpenseFromJson(String data) {
+    private static boolean addExpenseFromJson(
+            String data) {
 
         try {
 
-            String description = getJsonValue(
-                    data,
-                    "description"
-            );
+            String description =
+                    getJsonValue(data, "description");
 
-            String amountText = getJsonValue(
-                    data,
-                    "amount"
-            );
+            String amountText =
+                    getJsonValue(data, "amount");
 
-            String categoryName = getJsonValue(
-                    data,
-                    "category"
-            );
+            String categoryName =
+                    getJsonValue(data, "category");
 
-            String dateText = getJsonValue(
-                    data,
-                    "date"
-            );
+            String dateText =
+                    getJsonValue(data, "date");
 
 
+            // Validate empty values
             if (description.isEmpty()
                     || amountText.isEmpty()
                     || categoryName.isEmpty()
@@ -353,30 +407,37 @@ public class ExpenseServer {
             }
 
 
-            double amount = Double.parseDouble(amountText);
+            double amount =
+                    Double.parseDouble(amountText);
 
-            LocalDate date = LocalDate.parse(dateText);
+            LocalDate date =
+                    LocalDate.parse(dateText);
+
 
             int id = getNextId();
 
 
-            Category category = new Category(
-                    id,
-                    categoryName
-            );
+            Category category =
+                    new Category(
+                            id,
+                            categoryName
+                    );
 
 
-            Expense expense = new Expense(
-                    id,
-                    description,
-                    amount,
-                    category,
-                    date
-            );
+            Expense expense =
+                    new Expense(
+                            id,
+                            description,
+                            amount,
+                            category,
+                            date
+                    );
 
 
             manager.addExpense(expense);
 
+
+            // Save data
             FileManager.saveExpenses(
                     manager.getExpenses()
             );
@@ -396,9 +457,9 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // UPDATE / EDIT EXPENSE
-    // ===============================
+    // =========================================================
 
     private static boolean updateExpense(
             int id,
@@ -406,27 +467,20 @@ public class ExpenseServer {
 
         try {
 
-            String description = getJsonValue(
-                    data,
-                    "description"
-            );
+            String description =
+                    getJsonValue(data, "description");
 
-            String amountText = getJsonValue(
-                    data,
-                    "amount"
-            );
+            String amountText =
+                    getJsonValue(data, "amount");
 
-            String categoryName = getJsonValue(
-                    data,
-                    "category"
-            );
+            String categoryName =
+                    getJsonValue(data, "category");
 
-            String dateText = getJsonValue(
-                    data,
-                    "date"
-            );
+            String dateText =
+                    getJsonValue(data, "date");
 
 
+            // Validate values
             if (description.isEmpty()
                     || amountText.isEmpty()
                     || categoryName.isEmpty()
@@ -436,26 +490,32 @@ public class ExpenseServer {
             }
 
 
-            double amount = Double.parseDouble(amountText);
+            double amount =
+                    Double.parseDouble(amountText);
 
-            LocalDate date = LocalDate.parse(dateText);
+            LocalDate date =
+                    LocalDate.parse(dateText);
 
 
             ArrayList<Expense> expenses =
                     manager.getExpenses();
 
 
-            for (int i = 0; i < expenses.size(); i++) {
+            for (int i = 0;
+                 i < expenses.size();
+                 i++) {
 
-                Expense oldExpense = expenses.get(i);
+                Expense oldExpense =
+                        expenses.get(i);
 
 
                 if (oldExpense.getId() == id) {
 
-                    Category category = new Category(
-                            id,
-                            categoryName
-                    );
+                    Category category =
+                            new Category(
+                                    id,
+                                    categoryName
+                            );
 
 
                     Expense updatedExpense =
@@ -498,9 +558,9 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // DELETE EXPENSE
-    // ===============================
+    // =========================================================
 
     private static boolean deleteExpense(int id) {
 
@@ -508,15 +568,19 @@ public class ExpenseServer {
                 manager.getExpenses();
 
 
-        for (int i = 0; i < expenses.size(); i++) {
+        for (int i = 0;
+             i < expenses.size();
+             i++) {
 
             if (expenses.get(i).getId() == id) {
 
                 expenses.remove(i);
 
+
                 FileManager.saveExpenses(
                         expenses
                 );
+
 
                 return true;
             }
@@ -527,9 +591,9 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // GET NEXT ID
-    // ===============================
+    // =========================================================
 
     private static int getNextId() {
 
@@ -550,11 +614,12 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // GET ID FROM URL
-    // ===============================
+    // =========================================================
 
-    private static int getIdFromQuery(String query) {
+    private static int getIdFromQuery(
+            String query) {
 
         try {
 
@@ -563,7 +628,8 @@ public class ExpenseServer {
             }
 
 
-            String[] parts = query.split("=");
+            String[] parts =
+                    query.split("=");
 
 
             if (parts.length < 2) {
@@ -571,7 +637,9 @@ public class ExpenseServer {
             }
 
 
-            return Integer.parseInt(parts[1]);
+            return Integer.parseInt(
+                    parts[1]
+            );
 
         } catch (Exception e) {
 
@@ -580,13 +648,15 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
-    // CREATE JSON
-    // ===============================
+    // =========================================================
+    // CREATE EXPENSE JSON
+    // =========================================================
 
     private static String createJson() {
 
-        StringBuilder json = new StringBuilder();
+        StringBuilder json =
+                new StringBuilder();
+
 
         json.append("[");
 
@@ -595,19 +665,24 @@ public class ExpenseServer {
                 manager.getExpenses();
 
 
-        for (int i = 0; i < expenses.size(); i++) {
+        for (int i = 0;
+             i < expenses.size();
+             i++) {
 
-            Expense expense = expenses.get(i);
+            Expense expense =
+                    expenses.get(i);
 
 
             json.append("{");
 
 
+            // ID
             json.append("\"id\":")
                     .append(expense.getId())
                     .append(",");
 
 
+            // Description
             json.append("\"description\":\"")
                     .append(
                             escapeJson(
@@ -617,21 +692,25 @@ public class ExpenseServer {
                     .append("\",");
 
 
+            // Amount
             json.append("\"amount\":")
                     .append(expense.getAmount())
                     .append(",");
 
 
+            // Category
             json.append("\"category\":\"")
                     .append(
                             escapeJson(
-                                    expense.getCategory()
+                                    expense
+                                            .getCategory()
                                             .getName()
                             )
                     )
-                    .append("\",");
+                    .append(",");
 
 
+            // Date
             json.append("\"date\":\"")
                     .append(expense.getDate())
                     .append("\"");
@@ -653,18 +732,20 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // GET JSON VALUE
-    // ===============================
+    // =========================================================
 
     private static String getJsonValue(
             String json,
             String key) {
 
-        String search = "\"" + key + "\":";
+        String search =
+                "\"" + key + "\":";
 
 
-        int start = json.indexOf(search);
+        int start =
+                json.indexOf(search);
 
 
         if (start == -1) {
@@ -675,6 +756,7 @@ public class ExpenseServer {
         start += search.length();
 
 
+        // Remove spaces
         while (
                 start < json.length()
                         &&
@@ -698,10 +780,11 @@ public class ExpenseServer {
             start++;
 
 
-            int end = json.indexOf(
-                    "\"",
-                    start
-            );
+            int end =
+                    json.indexOf(
+                            "\"",
+                            start
+                    );
 
 
             if (end == -1) {
@@ -717,18 +800,20 @@ public class ExpenseServer {
 
 
         // Number value
-        int end = json.indexOf(
-                ",",
-                start
-        );
+        int end =
+                json.indexOf(
+                        ",",
+                        start
+                );
 
 
         if (end == -1) {
 
-            end = json.indexOf(
-                    "}",
-                    start
-            );
+            end =
+                    json.indexOf(
+                            "}",
+                            start
+                    );
         }
 
 
@@ -744,9 +829,9 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // CORS
-    // ===============================
+    // =========================================================
 
     private static void addCorsHeaders(
             HttpExchange exchange) {
@@ -770,9 +855,9 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // SEND RESPONSE
-    // ===============================
+    // =========================================================
 
     private static void sendResponse(
             HttpExchange exchange,
@@ -812,11 +897,12 @@ public class ExpenseServer {
     }
 
 
-    // ===============================
+    // =========================================================
     // ESCAPE JSON
-    // ===============================
+    // =========================================================
 
-    private static String escapeJson(String text) {
+    private static String escapeJson(
+            String text) {
 
         return text
                 .replace("\\", "\\\\")
